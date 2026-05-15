@@ -2,7 +2,6 @@
 
 This repository contains multiple Python-based projects that I have built for learning, practice, and real-world application. Each project is organized in separate folders with its own code and documentation.
 
-
 ## 🚀 Purpose of This Repository
 
 - To practice Python programming
@@ -11,11 +10,10 @@ This repository contains multiple Python-based projects that I have built for le
 - To prepare a strong portfolio for internships and jobs
 
 ## 🛠️ Technologies Used
-next add
+<<<<<< next add >>>>>>>
 
 ## 📌 Projects Included
-next add
-
+<<<<<< next add >>>>>>>
 
 ## 🎯 Goal
 
@@ -23,6 +21,6 @@ This repository is continuously growing as I learn new concepts and build more p
 
 ## 👨‍💻 Author
 
-Tamim  
-Computer Science Engineering Student  
+Abdul Aziz Tamim
+Computer Science Technology Student
 Passionate about Python, Web Development, and Problem Solving
