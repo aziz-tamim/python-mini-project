@@ -1,7 +1,95 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="page-header">
-    <h1>Add Task</h1>
-    <p class="subtext">Coming on Day 4!</p>
+    <div>
+        <h1>Add Task</h1>
+        <p class="subtext">What do you need to get done?</p>
+    </div>
+    <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
+        ← Back
+    </a>
 </div>
+
+<div class="form-card">
+    <form method="POST" action="{{ url_for('main.add_task') }}">
+
+        <!-- Title -->
+        <div class="form-group">
+            <label for="title">Task Title *</label>
+            <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="e.g. Review the project proposal"
+                value="{{ form_data.get('title', '') }}"
+                autofocus
+            >
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+            <label for="description">Description <span class="optional">(optional)</span></label>
+            <textarea
+                id="description"
+                name="description"
+                placeholder="Add any extra details or notes..."
+                rows="3"
+            >{{ form_data.get('description', '') }}</textarea>
+        </div>
+
+        <!-- Priority & Category side by side -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority">
+                    {% for p in priorities %}
+                        <option
+                            value="{{ p }}"
+                            {% if form_data.get('priority', 'medium') == p %}selected{% endif %}
+                        >
+                            {{ p | capitalize }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    {% for c in categories %}
+                        <option
+                            value="{{ c }}"
+                            {% if form_data.get('category', 'General') == c %}selected{% endif %}
+                        >
+                            {{ c }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Due date -->
+        <div class="form-group">
+            <label for="due_date">Due Date <span class="optional">(optional)</span></label>
+            <input
+                type="date"
+                id="due_date"
+                name="due_date"
+                value="{{ form_data.get('due_date', '') }}"
+            >
+        </div>
+
+        <!-- Buttons -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                ✓ Add Task
+            </button>
+            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+</div>
+
 {% endblock %}

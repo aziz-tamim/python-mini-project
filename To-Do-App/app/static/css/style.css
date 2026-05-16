@@ -402,6 +402,17 @@ main.container{
     margin-top: auto;
 }
 
+.optional {
+    font-weight: 400;
+    color: #bbb;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 12px;
+}
+/* Form card back link spacing */
+.form-card form {
+    width: 100%;
+}
 /* Responsive */
 @media (max-width: 600px) {
     .page-header h1  {
