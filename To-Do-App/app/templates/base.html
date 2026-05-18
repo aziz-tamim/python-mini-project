@@ -13,23 +13,125 @@
             <a href="{{ url_for('main.index') }}" class="brand">
                 <span class="brand-icon">✓</span> FocusFlow
             </a>
+
+            <!-- Search bar -->
+            <form method="GET" action="{{ url_for('main.index') }}"
+                  class="search-form">
+                <input
+                    type="text"
+                    name="search"
+                    class="search-input"
+                    placeholder="Search tasks..."
+                    value="{{ request.args.get('search', '') }}"
+                >
+                <button type="submit" class="search-btn">🔍</button>
+            </form>
+
             <a href="{{ url_for('main.add_task') }}" class="btn btn-primary">
                 + Add Task
             </a>
         </div>
     </nav>
 
-    <main class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        <main class="container">
+        <div class="layout">
 
-        {% block content %}{% endblock %}
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
 
+                <p class="sidebar-heading">Smart Lists</p>
+                <nav class="sidebar-nav">
+                    <a href="{{ url_for('main.index') }}"
+                       class="sidebar-link
+                       {% if not request.args.get('due_filter')
+                           and not request.args.get('category')
+                           and not request.args.get('filter') %}
+                           active{% endif %}">
+                        📋 All Tasks
+                        {% if sidebar_stats is defined and sidebar_stats %}
+                            <span class="sidebar-count">
+                                {{ sidebar_stats.today + sidebar_stats.overdue }}
+                            </span>
+                        {% endif %}
+                    </a>
+
+                    <a href="{{ url_for('main.index', due_filter='overdue') }}"
+                       class="sidebar-link
+                       {% if request.args.get('due_filter') == 'overdue' %}
+                           active overdue-link{% endif %}">
+                        ⚠️ Overdue
+                        {% if sidebar_stats is defined
+                              and sidebar_stats.overdue > 0 %}
+                            <span class="sidebar-count danger">
+                                {{ sidebar_stats.overdue }}
+                            </span>
+                        {% endif %}
+                    </a>
+
+                    <a href="{{ url_for('main.index', due_filter='today') }}"
+                       class="sidebar-link
+                       {% if request.args.get('due_filter') == 'today' %}
+                           active{% endif %}">
+                        📅 Due Today
+                        {% if sidebar_stats is defined
+                              and sidebar_stats.today > 0 %}
+                            <span class="sidebar-count">
+                                {{ sidebar_stats.today }}
+                            </span>
+                        {% endif %}
+                    </a>
+
+                    <a href="{{ url_for('main.index', due_filter='week') }}"
+                       class="sidebar-link
+                       {% if request.args.get('due_filter') == 'week' %}
+                           active{% endif %}">
+                        📆 This Week
+                        {% if sidebar_stats is defined
+                              and sidebar_stats.week > 0 %}
+                            <span class="sidebar-count">
+                                {{ sidebar_stats.week }}
+                            </span>
+                        {% endif %}
+                    </a>
+                </nav>
+
+                {% if sidebar_stats is defined
+                      and sidebar_stats.categories %}
+                    <p class="sidebar-heading" style="margin-top: 24px;">
+                        Categories
+                    </p>
+                    <nav class="sidebar-nav">
+                        {% for cat, count in
+                           sidebar_stats.categories.items() %}
+                            <a href="{{ url_for('main.index',
+                                       category=cat) }}"
+                               class="sidebar-link
+                               {% if request.args.get('category') == cat %}
+                                   active{% endif %}">
+                                📁 {{ cat }}
+                                <span class="sidebar-count">{{ count }}</span>
+                            </a>
+                        {% endfor %}
+                    </nav>
+                {% endif %}
+
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <div class="main-content">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
     </main>
 
     <footer class="footer">
@@ -37,6 +139,5 @@
             <p>FocusFlow — built with Python & Flask</p>
         </div>
     </footer>
-
 </body>
 </html>
