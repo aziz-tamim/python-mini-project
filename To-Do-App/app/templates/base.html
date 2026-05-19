@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-
     <nav class="navbar">
         <div class="container nav-inner">
             <a href="{{ url_for('main.index') }}" class="brand">
@@ -33,7 +32,18 @@
         </div>
     </nav>
 
-        <main class="container">
+    <main class="container">
+        {% if sidebar_stats and sidebar_stats.overdue > 0 %}
+        <div class="overdue-banner">
+            ⚠️ You have
+            <strong>{{ sidebar_stats.overdue }}
+            overdue task{{ 's' if sidebar_stats.overdue > 1 else '' }}</strong>
+            —
+            <a href="{{ url_for('main.index', due_filter='overdue') }}">
+                view them →
+            </a>
+        </div>
+        {% endif %}
         <div class="layout">
 
             <!-- SIDEBAR -->

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <p class="breadcrumb">
+            <a href="{{ url_for('main.index') }}">My Tasks</a>
+            <span>→</span>
+            <span>Task Detail</span>
+        </p>
+        <h1 class="detail-title
+            {% if task.is_done %}task-done-title{% endif %}">
+            {{ task.title }}
+        </h1>
+    </div>
+
+    <div style="display:flex; gap:8px; flex-shrink:0;">
+        <a href="{{ url_for('main.edit_task', task_id=task.id) }}"
+           class="btn btn-secondary">✏️ Edit</a>
+
+        <form method="POST"
+              action="{{ url_for('main.delete', task_id=task.id) }}"
+              onsubmit="return confirm('Delete this task permanently?')">
+            <button type="submit" class="btn btn-danger">
+                🗑️ Delete
+            </button>
+        </form>
+    </div>
+</div>
+
+
+<!-- STATUS BANNER -->
+{% if task.is_done %}
+    <div class="status-banner banner-done">
+        ✓ Completed on {{ task.created_at.strftime('%B %d, %Y') }}
+    </div>
+{% elif task.is_overdue %}
+    <div class="status-banner banner-overdue">
+        ⚠️ This task is overdue since
+        {{ task.due_date.strftime('%B %d, %Y') }}
+    </div>
+{% elif task.due_date and task.due_date == today %}
+    <div class="status-banner banner-today">
+        📅 This task is due today
+    </div>
+{% endif %}
+
+
+<!-- DETAIL CARD -->
+<div class="detail-card">
+
+    <!-- Description -->
+    <div class="detail-section">
+        <p class="detail-label">Description</p>
+        {% if task.description %}
+            <p class="detail-value">{{ task.description }}</p>
+        {% else %}
+            <p class="detail-value muted">No description added.</p>
+        {% endif %}
+    </div>
+
+    <div class="detail-divider"></div>
+
+    <!-- Meta grid -->
+    <div class="detail-grid">
+        <div class="detail-item">
+            <p class="detail-label">Priority</p>
+            <span class="badge badge-{{ task.priority }}">
+                {{ task.priority | capitalize }}
+            </span>
+        </div>
+
+        <div class="detail-item">
+            <p class="detail-label">Category</p>
+            <p class="detail-value">
+                <a href="{{ url_for('main.index', category=task.category) }}"
+                   class="category-link">
+                    📁 {{ task.category }}
+                </a>
+            </p>
+        </div>
+
+        <div class="detail-item">
+            <p class="detail-label">Due Date</p>
+            <p class="detail-value
+                {% if task.is_overdue %}overdue-text{% endif %}">
+                {% if task.due_date %}
+                    {{ task.due_date.strftime('%B %d, %Y') }}
+                {% else %}
+                    <span class="muted">No due date</span>
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="detail-item">
+            <p class="detail-label">Status</p>
+            <p class="detail-value">
+                {% if task.is_done %}
+                    <span style="color: #1d9e75; font-weight:500;">
+                        ✓ Completed
+                    </span>
+                {% else %}
+                    <span style="color: #854f0b; font-weight:500;">
+                        ⏳ Active
+                    </span>
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="detail-item">
+            <p class="detail-label">Created</p>
+            <p class="detail-value">
+                {{ task.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+            </p>
+        </div>
+    </div>
+
+    <div class="detail-divider"></div>
+
+    <!-- Toggle done button -->
+    <form method="POST"
+          action="{{ url_for('main.toggle_task', task_id=task.id) }}">
+        {% if task.is_done %}
+            <button type="submit" class="btn btn-secondary" style="width:100%;">
+                ↩️ Mark as Active
+            </button>
+        {% else %}
+            <button type="submit" class="btn btn-primary" style="width:100%;">
+                ✓ Mark as Complete
+            </button>
+        {% endif %}
+    </form>
+
+</div>
+
+{% endblock %}

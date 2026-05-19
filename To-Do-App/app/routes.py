@@ -1,3 +1,4 @@
+from datetime import date
 from flask import (
     Blueprint, render_template, request,
     redirect, url_for, flash
@@ -12,16 +13,20 @@ from app.forms import validate_task_form, CATEGORY_CHOICES, PRIORITY_CHOICES
 
 main = Blueprint('main', __name__)
 
+@main.route('/task/<int:task_id>')
+def task_detail(task_id):
+    task = get_task_by_id(task_id)
+    return render_template('task_detail.html', task=task, today=date.today())
 
 # HOME PAGE 
 @main.route('/')
 def index():
     # Collect all URL parameters
-    filter_by  = request.args.get('filter',     None)
-    sort_by    = request.args.get('sort',        'created_at')
-    category   = request.args.get('category',   None)
-    search     = request.args.get('search',      '').strip()
-    due_filter = request.args.get('due_filter',  None)
+    filter_by  = request.args.get('filter',    None)
+    sort_by    = request.args.get('sort',       'created_at')
+    category   = request.args.get('category',  None)
+    search     = request.args.get('search',    '').strip()
+    due_filter = request.args.get('due_filter', None)
 
     tasks = get_all_tasks(
         filter_by=filter_by,
@@ -32,27 +37,21 @@ def index():
     )
 
     use_groups = not search and not due_filter and not category and not filter_by
-    if use_groups:
-        grouped_tasks = get_grouped_tasks(tasks)
-    else:
-        grouped_tasks = None
-
-    stats         = get_task_stats()
-    sidebar_stats = get_sidebar_stats()
+    grouped_tasks = get_grouped_tasks(tasks) if use_groups else None
+    stats = get_task_stats()
 
     return render_template(
         'index.html',
         tasks=tasks,
         grouped_tasks=grouped_tasks,
         stats=stats,
-        sidebar_stats=sidebar_stats,
         current_filter=filter_by,
         current_sort=sort_by,
         current_category=category,
         current_search=search,
-        current_due_filter=due_filter
+        current_due_filter=due_filter,
+        today=date.today()
     )
-
 
 # ADD TASK
 @main.route('/task/add', methods=['GET', 'POST'])

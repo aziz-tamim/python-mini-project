@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="empty-state" style="padding: 100px 20px;">
+    <p class="empty-icon">🔍</p>
+    <p class="empty-title">Page not found</p>
+    <p class="empty-sub" style="margin-bottom: 24px;">
+        That page doesn't exist or the task was deleted.
+    </p>
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+        ← Back to My Tasks
+    </a>
+</div>
+{% endblock %}

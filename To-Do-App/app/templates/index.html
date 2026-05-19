@@ -5,143 +5,131 @@
 <!-- PAGE HEADER -->
 <div class="page-header">
     <div>
-        <h1>My Tasks</h1>
+        <h1>
+            {% if current_search %}
+                Results for "{{ current_search }}"
+            {% elif current_due_filter == 'overdue' %}
+                ⚠️ Overdue Tasks
+            {% elif current_due_filter == 'today' %}
+                📅 Due Today
+            {% elif current_due_filter == 'week' %}
+                📆 This Week
+            {% elif current_category %}
+                📁 {{ current_category }}
+            {% elif current_filter == 'completed' %}
+                Completed Tasks
+            {% elif current_filter == 'active' %}
+                Active Tasks
+            {% else %}
+                My Tasks
+            {% endif %}
+        </h1>
         <p class="subtext">
             {{ stats.active }} active · {{ stats.completed }} completed
         </p>
     </div>
 </div>
 
-
 <!-- PROGRESS BAR -->
+{% if not current_search and not current_due_filter %}
 <div class="progress-section">
     <div class="progress-label">
         <span>{{ stats.completed }} of {{ stats.total }} completed</span>
         <span>{{ stats.percent }}%</span>
     </div>
     <div class="progress-track">
-        <div class="progress-fill" style="width: {{ stats.percent }}%"></div>
+        <div class="progress-fill"
+             style="width: {{ stats.percent }}%">
+        </div>
     </div>
 </div>
+{% endif %}
 
-
-<!-- FILTER & SORT BAR -->
 <div class="toolbar">
-
     <div class="filter-group">
         <a href="{{ url_for('main.index') }}"
-           class="filter-btn {% if current_filter == None %}active{% endif %}">
+           class="filter-btn
+           {% if not current_filter %}active{% endif %}">
             All ({{ stats.total }})
         </a>
         <a href="{{ url_for('main.index', filter='active') }}"
-           class="filter-btn {% if current_filter == 'active' %}active{% endif %}">
+           class="filter-btn
+           {% if current_filter == 'active' %}active{% endif %}">
             Active ({{ stats.active }})
         </a>
         <a href="{{ url_for('main.index', filter='completed') }}"
-           class="filter-btn {% if current_filter == 'completed' %}active{% endif %}">
-            Completed ({{ stats.completed }})
+           class="filter-btn
+           {% if current_filter == 'completed' %}active{% endif %}">
+            Done ({{ stats.completed }})
         </a>
     </div>
 
-    <div class="sort-group">
-        <select class="sort-select"
-                onchange="window.location.href=this.value">
-            <option value="{{ url_for('main.index', filter=current_filter, sort='created_at') }}"
-                {% if current_sort == 'created_at' %}selected{% endif %}>
-                Newest first
-            </option>
-            <option value="{{ url_for('main.index', filter=current_filter, sort='due_date') }}"
-                {% if current_sort == 'due_date' %}selected{% endif %}>
-                Due date
-            </option>
-            <option value="{{ url_for('main.index', filter=current_filter, sort='priority') }}"
-                {% if current_sort == 'priority' %}selected{% endif %}>
-                Priority
-            </option>
-        </select>
-    </div>
-
+    <select class="sort-select"
+            onchange="window.location.href=this.value">
+        <option value="{{ url_for('main.index',
+                    filter=current_filter, sort='created_at',
+                    category=current_category) }}"
+            {% if current_sort == 'created_at' %}selected{% endif %}>
+            Newest first
+        </option>
+        <option value="{{ url_for('main.index',
+                    filter=current_filter, sort='due_date',
+                    category=current_category) }}"
+            {% if current_sort == 'due_date' %}selected{% endif %}>
+            Due date
+        </option>
+        <option value="{{ url_for('main.index',
+                    filter=current_filter, sort='priority',
+                    category=current_category) }}"
+            {% if current_sort == 'priority' %}selected{% endif %}>
+            Priority
+        </option>
+    </select>
 </div>
 
-
-<!-- TASK LIST -->
-{% if tasks %}
-    <div class="task-list">
-        {% for task in tasks %}
-        <div class="task-card {% if task.is_done %}task-done{% endif %} {% if task.is_overdue %}task-overdue{% endif %}">
-
-            <!-- Left: checkbox form -->
-            <form method="POST"
-                  action="{{ url_for('main.toggle_task', task_id=task.id) }}">
-                <button type="submit" class="checkbox
-                    {% if task.is_done %}checkbox-checked{% endif %}"
-                    title="Mark as {% if task.is_done %}active{% else %}done{% endif %}">
-                    {% if task.is_done %}✓{% endif %}
-                </button>
-            </form>
-
-            <!-- Middle: task info -->
-            <div class="task-body">
-                <p class="task-title">{{ task.title }}</p>
-
-                {% if task.description %}
-                    <p class="task-desc">{{ task.description }}</p>
-                {% endif %}
-
-                <div class="task-meta">
-                    <!-- Priority badge -->
-                    <span class="badge badge-{{ task.priority }}">
-                        {{ task.priority | capitalize }}
-                    </span>
-
-                    <!-- Category -->
-                    <span class="meta-item">
-                        📁 {{ task.category }}
-                    </span>
-
-                    <!-- Due date -->
-                    {% if task.due_date %}
-                        <span class="meta-item {% if task.is_overdue %}overdue-text{% endif %}">
-                            📅
-                            {% if task.is_overdue %}
-                                Overdue · {{ task.due_date.strftime('%b %d') }}
-                            {% else %}
-                                {{ task.due_date.strftime('%b %d, %Y') }}
-                            {% endif %}
-                        </span>
-                    {% endif %}
-
-                    <!-- Created date -->
-                    <span class="meta-item muted">
-                        Added {{ task.created_at.strftime('%b %d') }}
-                    </span>
-                </div>
-            </div>
-
-            <!-- Right: action buttons -->
-            <div class="task-actions">
-                <a href="{{ url_for('main.edit_task', task_id=task.id) }}"
-                   class="action-btn edit-btn" title="Edit task">✏️</a>
-
-                <form method="POST"
-                      action="{{ url_for('main.delete', task_id=task.id) }}"
-                      onsubmit="return confirm('Delete \'{{ task.title }}\'?')">
-                    <button type="submit"
-                            class="action-btn delete-btn"
-                            title="Delete task">🗑️</button>
-                </form>
-            </div>
-
-        </div>
-        {% endfor %}
+<!-- SEARCH RESULT NOTICE -->
+ {% if current_search %}
+    <div class="search-notice">
+        {{ tasks | length }} result(s) for
+        <strong>"{{ current_search }}"</strong>
+        — <a href="{{ url_for('main.index') }}">Clear search</a>
     </div>
+{% endif %}
+
+<!-- ── TASK LIST ─────────────────────────────────────────────── -->
+{% if tasks %}
+
+    {% if grouped_tasks %}
+        <!-- Grouped view: overdue → today → upcoming → no date -->
+        {% for group_name, group_tasks in grouped_tasks %}
+            <div class="group-header">{{ group_name }}</div>
+            <div class="task-list" style="margin-bottom: 24px;">
+                {% for task in group_tasks %}
+                    {% include 'partials/task_card.html' %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+    {% else %}
+        <!-- Flat view: search results / filtered view -->
+        <div class="task-list">
+            {% for task in tasks %}
+                {% include 'partials/task_card.html' %}
+            {% endfor %}
+        </div>
+    {% endif %}
 
 {% else %}
-    <!-- Empty state -->
     <div class="empty-state">
         <p class="empty-icon">📋</p>
         <p class="empty-title">
-            {% if current_filter == 'completed' %}
+            {% if current_search %}
+                No tasks match "{{ current_search }}"
+            {% elif current_due_filter == 'overdue' %}
+                No overdue tasks — great job!
+            {% elif current_due_filter == 'today' %}
+                Nothing due today
+            {% elif current_filter == 'completed' %}
                 No completed tasks yet
             {% elif current_filter == 'active' %}
                 No active tasks — you're all caught up!
@@ -150,7 +138,9 @@
             {% endif %}
         </p>
         <p class="empty-sub">
-            <a href="{{ url_for('main.add_task') }}">Add your first task →</a>
+            <a href="{{ url_for('main.add_task') }}">
+                Add your first task →
+            </a>
         </p>
     </div>
 {% endif %}
