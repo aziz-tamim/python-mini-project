@@ -1,7 +1,7 @@
 # ✓ FocusFlow
 
 A clean, full-featured To-Do application built with Python and Flask.
-<!-- Live demo: [focusflow.onrender.com](https://focusflow.onrender.com) -->
+Live demo: [focusflow.onrender.com](https://focusflow.onrender.com)
 
 ## Features
 
@@ -25,13 +25,13 @@ A clean, full-featured To-Do application built with Python and Flask.
 | Database | SQLite via Flask-SQLAlchemy |
 | Templates | Jinja2 |
 | Styles | Custom CSS |
-<!-- | Deployment | Render | -->
+| Deployment | Render |
 
 ## Run Locally
 
 1. Clone the repository
-   git clone https://github.com/aziz-tamim/python-mini-project.git
-   cd To-Do-App
+   git clone https://github.com/YOUR_USERNAME/focusflow.git
+   cd focusflow
 
 2. Install dependencies
    pip install -r requirements.txt
@@ -47,7 +47,7 @@ A clean, full-featured To-Do application built with Python and Flask.
 
 ## Project Structure
 
-To-Do-App/
+focusflow/
 ├── app/
 │   ├── __init__.py      # App factory & context processor
 │   ├── models.py        # Task database model
