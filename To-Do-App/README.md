@@ -46,7 +46,7 @@ A clean, full-featured To-Do application built with Python and Flask.
 5. Open http://127.0.0.1:5000 in your browser
 
 ## Project Structure
-
+```
 To-Do-App/
 ├── app/
 │   ├── __init__.py      # App factory & context processor
@@ -60,7 +60,7 @@ To-Do-App/
 ├── config.py            # App configuration
 ├── run.py               # Entry point
 └── Procfile             # Deployment config
-
+```
 ## What I Learned
 
 - Flask application factory pattern
